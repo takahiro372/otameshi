@@ -52,7 +52,7 @@ type
     { Private declarations }
     function GetScoreFromComboBox(ComboBox: TComboBox): Integer;
     procedure UpdateTotalScore;
-    procedure InitializeUI;
+    procedure InitializeComboBoxes;
   public
     { Public declarations }
   end;
@@ -66,100 +66,71 @@ implementation
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  InitializeUI;
+  InitializeComboBoxes;
   UpdateTotalScore;
 end;
 
-procedure TFormMain.InitializeUI;
+procedure TFormMain.InitializeComboBoxes;
 begin
-  // フォームタイトルと各種ラベルを日本語に設定
-  Caption := 'バーセルインデックス評価管理システム';
-
-  GroupBox1.Caption := '患者情報';
-  Label1.Caption := '患者ID:';
-  Label2.Caption := '患者名:';
-  Label3.Caption := '評価日付:';
-
-  GroupBox2.Caption := '評価項目';
-  Label4.Caption := '1. 食事';
-  Label5.Caption := '2. 車椅子からベッドへの移動';
-  Label6.Caption := '3. 整容（身だしなみ）';
-  Label7.Caption := '4. トイレ動作';
-  Label8.Caption := '5. 入浴';
-  Label9.Caption := '6. 歩行';
-  Label10.Caption := '7. 階段昇降';
-  Label11.Caption := '8. 更衣';
-  Label12.Caption := '9. 排便コントロール';
-  Label13.Caption := '10. 排尿コントロール';
-  Label14.Caption := '合計得点:';
-
-  ButtonSave.Caption := '保存';
-  ButtonLoad.Caption := '読み込み';
-  ButtonClear.Caption := 'クリア';
-
-  // 保存・読み込みダイアログのフィルタ
-  SaveDialog1.Filter := 'バーセルインデックスデータ (*.bi)|*.bi|すべてのファイル (*.*)|*.*';
-  OpenDialog1.Filter := 'バーセルインデックスデータ (*.bi)|*.bi|すべてのファイル (*.*)|*.*';
-
-  // ComboBox1 - 食事
+  // ComboBox1 - Feeding
   ComboBox1.Items.Clear;
-  ComboBox1.Items.Add('0点: 全介助');
-  ComboBox1.Items.Add('5点: 一部介助');
-  ComboBox1.Items.Add('10点: 自立');
+  ComboBox1.Items.Add('0: Total assistance');
+  ComboBox1.Items.Add('5: Partial assistance');
+  ComboBox1.Items.Add('10: Independent');
 
-  // ComboBox2 - 移動
+  // ComboBox2 - Transfer (Bed to Chair)
   ComboBox2.Items.Clear;
-  ComboBox2.Items.Add('0点: 全介助');
-  ComboBox2.Items.Add('5点: 多大な介助が必要');
-  ComboBox2.Items.Add('10点: 少し介助が必要');
-  ComboBox2.Items.Add('15点: 自立');
+  ComboBox2.Items.Add('0: Total assistance');
+  ComboBox2.Items.Add('5: Major assistance');
+  ComboBox2.Items.Add('10: Minor assistance');
+  ComboBox2.Items.Add('15: Independent');
 
-  // ComboBox3 - 整容
+  // ComboBox3 - Grooming
   ComboBox3.Items.Clear;
-  ComboBox3.Items.Add('0点: 全介助');
-  ComboBox3.Items.Add('5点: 自立');
+  ComboBox3.Items.Add('0: Needs help');
+  ComboBox3.Items.Add('5: Independent');
 
-  // ComboBox4 - トイレ動作
+  // ComboBox4 - Toilet Use
   ComboBox4.Items.Clear;
-  ComboBox4.Items.Add('0点: 全介助');
-  ComboBox4.Items.Add('5点: 介助が必要');
-  ComboBox4.Items.Add('10点: 自立');
+  ComboBox4.Items.Add('0: Dependent');
+  ComboBox4.Items.Add('5: Needs help');
+  ComboBox4.Items.Add('10: Independent');
 
-  // ComboBox5 - 入浴
+  // ComboBox5 - Bathing
   ComboBox5.Items.Clear;
-  ComboBox5.Items.Add('0点: 全介助');
-  ComboBox5.Items.Add('5点: 自立');
+  ComboBox5.Items.Add('0: Dependent');
+  ComboBox5.Items.Add('5: Independent');
 
-  // ComboBox6 - 歩行
+  // ComboBox6 - Mobility (Walking)
   ComboBox6.Items.Clear;
-  ComboBox6.Items.Add('0点: 歩行不可 or 50m未満');
-  ComboBox6.Items.Add('5点: 車椅子で50m');
-  ComboBox6.Items.Add('10点: 歩行器で50m、監視or杖で介助が必要');
-  ComboBox6.Items.Add('15点: 50m自立');
+  ComboBox6.Items.Add('0: Immobile or < 50m');
+  ComboBox6.Items.Add('5: Wheelchair 50m');
+  ComboBox6.Items.Add('10: Walks with help 50m');
+  ComboBox6.Items.Add('15: Independent 50m');
 
-  // ComboBox7 - 階段昇降
+  // ComboBox7 - Stairs
   ComboBox7.Items.Clear;
-  ComboBox7.Items.Add('0点: 不可');
-  ComboBox7.Items.Add('5点: 介助が必要');
-  ComboBox7.Items.Add('10点: 自立');
+  ComboBox7.Items.Add('0: Unable');
+  ComboBox7.Items.Add('5: Needs help');
+  ComboBox7.Items.Add('10: Independent');
 
-  // ComboBox8 - 更衣
+  // ComboBox8 - Dressing
   ComboBox8.Items.Clear;
-  ComboBox8.Items.Add('0点: 全介助');
-  ComboBox8.Items.Add('5点: 介助が必要');
-  ComboBox8.Items.Add('10点: 自立');
+  ComboBox8.Items.Add('0: Dependent');
+  ComboBox8.Items.Add('5: Needs help');
+  ComboBox8.Items.Add('10: Independent');
 
-  // ComboBox9 - 排便コントロール
+  // ComboBox9 - Bowel Control
   ComboBox9.Items.Clear;
-  ComboBox9.Items.Add('0点: 失禁頻回 or 浣腸、座薬');
-  ComboBox9.Items.Add('5点: 時々失禁(1回/週)');
-  ComboBox9.Items.Add('10点: コントロール良好');
+  ComboBox9.Items.Add('0: Incontinent or catheter');
+  ComboBox9.Items.Add('5: Occasional accident');
+  ComboBox9.Items.Add('10: Continent');
 
-  // ComboBox10 - 排尿コントロール
+  // ComboBox10 - Bladder Control
   ComboBox10.Items.Clear;
-  ComboBox10.Items.Add('0点: 失禁頻回 or 尿閉');
-  ComboBox10.Items.Add('5点: 時々失禁(1回/週)');
-  ComboBox10.Items.Add('10点: コントロール良好');
+  ComboBox10.Items.Add('0: Incontinent or catheter');
+  ComboBox10.Items.Add('5: Occasional accident');
+  ComboBox10.Items.Add('10: Continent');
 end;
 
 function TFormMain.GetScoreFromComboBox(ComboBox: TComboBox): Integer;
@@ -171,7 +142,7 @@ begin
   if ComboBox.ItemIndex >= 0 then
   begin
     ScoreStr := ComboBox.Items[ComboBox.ItemIndex];
-    PosColon := Pos('点', ScoreStr);
+    PosColon := Pos(':', ScoreStr);
     if PosColon > 0 then
     begin
       ScoreStr := Copy(ScoreStr, 1, PosColon - 1);
@@ -190,19 +161,19 @@ var
 begin
   TotalScore := 0;
 
-  // 各評価項目のスコアを合計
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox1);   // 食事
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox2);   // 移動
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox3);   // 整容
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox4);   // トイレ動作
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox5);   // 入浴
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox6);   // 歩行
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox7);   // 階段昇降
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox8);   // 更衣
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox9);   // 排便コントロール
-  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox10);  // 排尿コントロール
+  // Sum all evaluation items
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox1);   // Feeding
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox2);   // Transfer
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox3);   // Grooming
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox4);   // Toilet Use
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox5);   // Bathing
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox6);   // Mobility
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox7);   // Stairs
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox8);   // Dressing
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox9);   // Bowel Control
+  TotalScore := TotalScore + GetScoreFromComboBox(ComboBox10);  // Bladder Control
 
-  LabelTotalScore.Caption := IntToStr(TotalScore) + '点';
+  LabelTotalScore.Caption := IntToStr(TotalScore) + ' pts';
 end;
 
 procedure TFormMain.CalculateTotal(Sender: TObject);
@@ -219,14 +190,14 @@ begin
   begin
     FileList := TStringList.Create;
     try
-      // 患者情報
+      // Patient Information
       FileList.Add('[PatientInfo]');
       FileList.Add('PatientID=' + EditPatientID.Text);
       FileList.Add('PatientName=' + EditPatientName.Text);
       FileList.Add('EvalDate=' + DateToStr(DateTimePickerEval.Date));
       FileList.Add('');
 
-      // 評価項目
+      // Evaluation Items
       FileList.Add('[Evaluation]');
       FileList.Add('Item1=' + IntToStr(ComboBox1.ItemIndex));
       FileList.Add('Item2=' + IntToStr(ComboBox2.ItemIndex));
@@ -240,12 +211,12 @@ begin
       FileList.Add('Item10=' + IntToStr(ComboBox10.ItemIndex));
       FileList.Add('');
 
-      // 合計点
+      // Total Score
       FileList.Add('[Score]');
       FileList.Add('TotalScore=' + LabelTotalScore.Caption);
 
       FileList.SaveToFile(SaveDialog1.FileName);
-      ShowMessage('データを保存しました。');
+      ShowMessage('Data saved successfully.');
     finally
       FileList.Free;
     end;
@@ -277,14 +248,14 @@ begin
           Key := Trim(Copy(Line, 1, PosEqual - 1));
           Value := Trim(Copy(Line, PosEqual + 1, Length(Line)));
 
-          // 患者情報
+          // Patient Information
           if Key = 'PatientID' then
             EditPatientID.Text := Value
           else if Key = 'PatientName' then
             EditPatientName.Text := Value
           else if Key = 'EvalDate' then
             DateTimePickerEval.Date := StrToDate(Value)
-          // 評価項目
+          // Evaluation Items
           else if Key = 'Item1' then
             ComboBox1.ItemIndex := StrToInt(Value)
           else if Key = 'Item2' then
@@ -309,7 +280,7 @@ begin
       end;
 
       UpdateTotalScore;
-      ShowMessage('データを読み込みました。');
+      ShowMessage('Data loaded successfully.');
     finally
       FileList.Free;
     end;
@@ -320,7 +291,7 @@ procedure TFormMain.ButtonClearClick(Sender: TObject);
 var
   I: Integer;
 begin
-  if MessageDlg('すべての入力内容をクリアします。よろしいですか？',
+  if MessageDlg('Clear all input data. Are you sure?',
                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
     EditPatientID.Text := '';
