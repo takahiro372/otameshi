@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瞑想時間管理アプリ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧘 瞑想時間管理</h1>
+        </header>
+
+        <main>
+            <!-- タイマーセクション -->
+            <section class="timer-section">
+                <h2>タイマー</h2>
+                <div class="timer-display">
+                    <span id="timer">00:00:00</span>
+                </div>
+                <div class="timer-controls">
+                    <button id="startBtn" class="btn btn-primary">開始</button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>一時停止</button>
+                    <button id="stopBtn" class="btn btn-danger" disabled>停止</button>
+                    <button id="resetBtn" class="btn btn-secondary">リセット</button>
+                </div>
+                <div class="manual-entry">
+                    <h3>手動で記録</h3>
+                    <div class="input-group">
+                        <input type="number" id="manualMinutes" placeholder="分" min="0">
+                        <button id="saveManualBtn" class="btn btn-primary">記録</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 統計セクション -->
+            <section class="stats-section">
+                <h2>統計</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">今日の合計</div>
+                        <div class="stat-value" id="todayTotal">0分</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">今週の合計</div>
+                        <div class="stat-value" id="weekTotal">0分</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">累計時間</div>
+                        <div class="stat-value" id="allTimeTotal">0分</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">連続日数</div>
+                        <div class="stat-value" id="streak">0日</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 履歴セクション -->
+            <section class="history-section">
+                <h2>履歴</h2>
+                <div id="historyList" class="history-list">
+                    <p class="no-data">まだ記録がありません</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
