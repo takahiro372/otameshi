@@ -47,10 +47,12 @@ type
     procedure ButtonSaveClick(Sender: TObject);
     procedure ButtonLoadClick(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     function GetScoreFromComboBox(ComboBox: TComboBox): Integer;
     procedure UpdateTotalScore;
+    procedure InitializeUI;
   public
     { Public declarations }
   end;
@@ -61,6 +63,104 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TFormMain.FormCreate(Sender: TObject);
+begin
+  InitializeUI;
+  UpdateTotalScore;
+end;
+
+procedure TFormMain.InitializeUI;
+begin
+  // フォームタイトルと各種ラベルを日本語に設定
+  Caption := 'バーセルインデックス評価管理システム';
+
+  GroupBox1.Caption := '患者情報';
+  Label1.Caption := '患者ID:';
+  Label2.Caption := '患者名:';
+  Label3.Caption := '評価日付:';
+
+  GroupBox2.Caption := '評価項目';
+  Label4.Caption := '1. 食事';
+  Label5.Caption := '2. 車椅子からベッドへの移動';
+  Label6.Caption := '3. 整容（身だしなみ）';
+  Label7.Caption := '4. トイレ動作';
+  Label8.Caption := '5. 入浴';
+  Label9.Caption := '6. 歩行';
+  Label10.Caption := '7. 階段昇降';
+  Label11.Caption := '8. 更衣';
+  Label12.Caption := '9. 排便コントロール';
+  Label13.Caption := '10. 排尿コントロール';
+  Label14.Caption := '合計得点:';
+
+  ButtonSave.Caption := '保存';
+  ButtonLoad.Caption := '読み込み';
+  ButtonClear.Caption := 'クリア';
+
+  // 保存・読み込みダイアログのフィルタ
+  SaveDialog1.Filter := 'バーセルインデックスデータ (*.bi)|*.bi|すべてのファイル (*.*)|*.*';
+  OpenDialog1.Filter := 'バーセルインデックスデータ (*.bi)|*.bi|すべてのファイル (*.*)|*.*';
+
+  // ComboBox1 - 食事
+  ComboBox1.Items.Clear;
+  ComboBox1.Items.Add('0点: 全介助');
+  ComboBox1.Items.Add('5点: 一部介助');
+  ComboBox1.Items.Add('10点: 自立');
+
+  // ComboBox2 - 移動
+  ComboBox2.Items.Clear;
+  ComboBox2.Items.Add('0点: 全介助');
+  ComboBox2.Items.Add('5点: 多大な介助が必要');
+  ComboBox2.Items.Add('10点: 少し介助が必要');
+  ComboBox2.Items.Add('15点: 自立');
+
+  // ComboBox3 - 整容
+  ComboBox3.Items.Clear;
+  ComboBox3.Items.Add('0点: 全介助');
+  ComboBox3.Items.Add('5点: 自立');
+
+  // ComboBox4 - トイレ動作
+  ComboBox4.Items.Clear;
+  ComboBox4.Items.Add('0点: 全介助');
+  ComboBox4.Items.Add('5点: 介助が必要');
+  ComboBox4.Items.Add('10点: 自立');
+
+  // ComboBox5 - 入浴
+  ComboBox5.Items.Clear;
+  ComboBox5.Items.Add('0点: 全介助');
+  ComboBox5.Items.Add('5点: 自立');
+
+  // ComboBox6 - 歩行
+  ComboBox6.Items.Clear;
+  ComboBox6.Items.Add('0点: 歩行不可 or 50m未満');
+  ComboBox6.Items.Add('5点: 車椅子で50m');
+  ComboBox6.Items.Add('10点: 歩行器で50m、監視or杖で介助が必要');
+  ComboBox6.Items.Add('15点: 50m自立');
+
+  // ComboBox7 - 階段昇降
+  ComboBox7.Items.Clear;
+  ComboBox7.Items.Add('0点: 不可');
+  ComboBox7.Items.Add('5点: 介助が必要');
+  ComboBox7.Items.Add('10点: 自立');
+
+  // ComboBox8 - 更衣
+  ComboBox8.Items.Clear;
+  ComboBox8.Items.Add('0点: 全介助');
+  ComboBox8.Items.Add('5点: 介助が必要');
+  ComboBox8.Items.Add('10点: 自立');
+
+  // ComboBox9 - 排便コントロール
+  ComboBox9.Items.Clear;
+  ComboBox9.Items.Add('0点: 失禁頻回 or 浣腸、座薬');
+  ComboBox9.Items.Add('5点: 時々失禁(1回/週)');
+  ComboBox9.Items.Add('10点: コントロール良好');
+
+  // ComboBox10 - 排尿コントロール
+  ComboBox10.Items.Clear;
+  ComboBox10.Items.Add('0点: 失禁頻回 or 尿閉');
+  ComboBox10.Items.Add('5点: 時々失禁(1回/週)');
+  ComboBox10.Items.Add('10点: コントロール良好');
+end;
 
 function TFormMain.GetScoreFromComboBox(ComboBox: TComboBox): Integer;
 var
