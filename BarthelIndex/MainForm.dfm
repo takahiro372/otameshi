@@ -265,31 +265,84 @@ object FormMain: TFormMain
       OnChange = CalculateTotal
     end
   end
-  object ButtonSave: TButton
+  object GroupBox3: TGroupBox
+    Left = 8
+    Top = 512
+    Width = 209
+    Height = 49
+    Caption = 'Evaluation Type'
+    TabOrder = 2
+    object RadioButtonAdmission: TRadioButton
+      Left = 16
+      Top = 20
+      Width = 81
+      Height = 17
+      Caption = 'Admission'
+      Checked = True
+      TabOrder = 0
+      TabStop = True
+    end
+    object RadioButtonDischarge: TRadioButton
+      Left = 112
+      Top = 20
+      Width = 81
+      Height = 17
+      Caption = 'Discharge'
+      TabOrder = 1
+    end
+  end
+  object ButtonSaveDB: TButton
+    Left = 560
+    Top = 520
+    Width = 105
+    Height = 33
+    Caption = 'Save to DB'
+    TabOrder = 3
+    OnClick = ButtonSaveDBClick
+  end
+  object ButtonLoadDB: TButton
     Left = 448
     Top = 520
     Width = 105
     Height = 33
-    Caption = 'Save'
-    TabOrder = 2
-    OnClick = ButtonSaveClick
+    Caption = 'Load from DB'
+    TabOrder = 4
+    OnClick = ButtonLoadDBClick
   end
-  object ButtonLoad: TButton
-    Left = 336
-    Top = 520
-    Width = 105
-    Height = 33
-    Caption = 'Load'
-    TabOrder = 3
-    OnClick = ButtonLoadClick
-  end
-  object ButtonClear: TButton
+  object ButtonConnect: TButton
     Left = 224
     Top = 520
     Width = 105
     Height = 33
+    Caption = 'DB Connect'
+    TabOrder = 5
+    OnClick = ButtonConnectClick
+  end
+  object ButtonSave: TButton
+    Left = 560
+    Top = 480
+    Width = 105
+    Height = 25
+    Caption = 'Save to File'
+    TabOrder = 6
+    OnClick = ButtonSaveClick
+  end
+  object ButtonLoad: TButton
+    Left = 448
+    Top = 480
+    Width = 105
+    Height = 25
+    Caption = 'Load from File'
+    TabOrder = 7
+    OnClick = ButtonLoadClick
+  end
+  object ButtonClear: TButton
+    Left = 336
+    Top = 520
+    Width = 105
+    Height = 33
     Caption = 'Clear'
-    TabOrder = 4
+    TabOrder = 8
     OnClick = ButtonClearClick
   end
   object SaveDialog1: TSaveDialog

@@ -1,0 +1,17 @@
+[Database]
+; SQL Server connection settings
+; Copy this file to DBConfig.ini and edit with your settings
+
+; SQL Server hostname or IP address
+Server=localhost
+
+; Database name
+Database=BarthelIndexDB
+
+; SQL Server authentication
+; For SQL Server authentication, provide username and password
+Username=sa
+Password=YourPassword
+
+; For Windows authentication, leave Username and Password empty
+; and the application will use Integrated Security=SSPI

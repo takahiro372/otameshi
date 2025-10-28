@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls;
+  Dialogs, StdCtrls, ComCtrls, DBModule;
 
 type
   TFormMain = class(TForm)
@@ -38,21 +38,33 @@ type
     ComboBox8: TComboBox;
     ComboBox9: TComboBox;
     ComboBox10: TComboBox;
+    GroupBox3: TGroupBox;
+    RadioButtonAdmission: TRadioButton;
+    RadioButtonDischarge: TRadioButton;
     ButtonSave: TButton;
     ButtonLoad: TButton;
     ButtonClear: TButton;
+    ButtonSaveDB: TButton;
+    ButtonLoadDB: TButton;
+    ButtonConnect: TButton;
     SaveDialog1: TSaveDialog;
     OpenDialog1: TOpenDialog;
     procedure CalculateTotal(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure ButtonLoadClick(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
+    procedure ButtonSaveDBClick(Sender: TObject);
+    procedure ButtonLoadDBClick(Sender: TObject);
+    procedure ButtonConnectClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     function GetScoreFromComboBox(ComboBox: TComboBox): Integer;
+    function GetScoreValue(Index: Integer): Integer;
     procedure UpdateTotalScore;
     procedure InitializeComboBoxes;
+    function GetEvaluationType: string;
+    procedure GetAllScores(var Scores: array of Integer);
   public
     { Public declarations }
   end;
@@ -155,6 +167,32 @@ begin
   end;
 end;
 
+function TFormMain.GetScoreValue(Index: Integer): Integer;
+begin
+  case Index of
+    0: Result := GetScoreFromComboBox(ComboBox1);
+    1: Result := GetScoreFromComboBox(ComboBox2);
+    2: Result := GetScoreFromComboBox(ComboBox3);
+    3: Result := GetScoreFromComboBox(ComboBox4);
+    4: Result := GetScoreFromComboBox(ComboBox5);
+    5: Result := GetScoreFromComboBox(ComboBox6);
+    6: Result := GetScoreFromComboBox(ComboBox7);
+    7: Result := GetScoreFromComboBox(ComboBox8);
+    8: Result := GetScoreFromComboBox(ComboBox9);
+    9: Result := GetScoreFromComboBox(ComboBox10);
+  else
+    Result := 0;
+  end;
+end;
+
+procedure TFormMain.GetAllScores(var Scores: array of Integer);
+var
+  I: Integer;
+begin
+  for I := 0 to 9 do
+    Scores[I] := GetScoreValue(I);
+end;
+
 procedure TFormMain.UpdateTotalScore;
 var
   TotalScore: Integer;
@@ -181,6 +219,158 @@ begin
   UpdateTotalScore;
 end;
 
+function TFormMain.GetEvaluationType: string;
+begin
+  if RadioButtonAdmission.Checked then
+    Result := 'Admission'
+  else
+    Result := 'Discharge';
+end;
+
+// Database operations
+procedure TFormMain.ButtonConnectClick(Sender: TObject);
+begin
+  if DataModule1.IsConnected then
+  begin
+    DataModule1.DisconnectFromDatabase;
+    ShowMessage('Disconnected from database.');
+    ButtonConnect.Caption := 'DB Connect';
+  end
+  else
+  begin
+    if DataModule1.ConnectToDatabase then
+    begin
+      ShowMessage('Connected to database successfully.');
+      ButtonConnect.Caption := 'DB Disconnect';
+    end
+    else
+    begin
+      ShowMessage('Failed to connect to database. Check DBConfig.ini file.');
+    end;
+  end;
+end;
+
+procedure TFormMain.ButtonSaveDBClick(Sender: TObject);
+var
+  Scores: array[0..9] of Integer;
+  TotalScore: Integer;
+  EvalType: string;
+begin
+  if not DataModule1.IsConnected then
+  begin
+    ShowMessage('Please connect to database first.');
+    Exit;
+  end;
+
+  if Trim(EditPatientID.Text) = '' then
+  begin
+    ShowMessage('Please enter Patient ID.');
+    Exit;
+  end;
+
+  if Trim(EditPatientName.Text) = '' then
+  begin
+    ShowMessage('Please enter Patient Name.');
+    Exit;
+  end;
+
+  // Save patient information
+  if not DataModule1.InsertOrUpdatePatient(EditPatientID.Text, EditPatientName.Text) then
+  begin
+    ShowMessage('Failed to save patient information.');
+    Exit;
+  end;
+
+  // Get evaluation type
+  EvalType := GetEvaluationType;
+
+  // Get all scores
+  GetAllScores(Scores);
+  TotalScore := GetScoreFromComboBox(ComboBox1) + GetScoreFromComboBox(ComboBox2) +
+                GetScoreFromComboBox(ComboBox3) + GetScoreFromComboBox(ComboBox4) +
+                GetScoreFromComboBox(ComboBox5) + GetScoreFromComboBox(ComboBox6) +
+                GetScoreFromComboBox(ComboBox7) + GetScoreFromComboBox(ComboBox8) +
+                GetScoreFromComboBox(ComboBox9) + GetScoreFromComboBox(ComboBox10);
+
+  // Save evaluation
+  if DataModule1.SaveEvaluation(EditPatientID.Text, EvalType,
+                                DateTimePickerEval.Date, Scores, TotalScore, '') then
+  begin
+    ShowMessage('Evaluation saved to database successfully.');
+  end
+  else
+  begin
+    ShowMessage('Failed to save evaluation to database.');
+  end;
+end;
+
+procedure TFormMain.ButtonLoadDBClick(Sender: TObject);
+var
+  Scores: array[0..9] of Integer;
+  TotalScore: Integer;
+  EvalDate: TDateTime;
+  EvalType: string;
+  I: Integer;
+  ComboBoxes: array[0..9] of TComboBox;
+begin
+  if not DataModule1.IsConnected then
+  begin
+    ShowMessage('Please connect to database first.');
+    Exit;
+  end;
+
+  if Trim(EditPatientID.Text) = '' then
+  begin
+    ShowMessage('Please enter Patient ID.');
+    Exit;
+  end;
+
+  // Get evaluation type
+  EvalType := GetEvaluationType;
+
+  // Load evaluation
+  if DataModule1.LoadEvaluation(EditPatientID.Text, EvalType, EvalDate, Scores, TotalScore) then
+  begin
+    DateTimePickerEval.Date := EvalDate;
+
+    // Array of ComboBoxes for easier access
+    ComboBoxes[0] := ComboBox1;
+    ComboBoxes[1] := ComboBox2;
+    ComboBoxes[2] := ComboBox3;
+    ComboBoxes[3] := ComboBox4;
+    ComboBoxes[4] := ComboBox5;
+    ComboBoxes[5] := ComboBox6;
+    ComboBoxes[6] := ComboBox7;
+    ComboBoxes[7] := ComboBox8;
+    ComboBoxes[8] := ComboBox9;
+    ComboBoxes[9] := ComboBox10;
+
+    // Set ComboBox selections based on scores
+    for I := 0 to 9 do
+    begin
+      case Scores[I] of
+        0: ComboBoxes[I].ItemIndex := 0;
+        5: ComboBoxes[I].ItemIndex := 1;
+        10: if ComboBoxes[I].Items.Count > 2 then
+              ComboBoxes[I].ItemIndex := 2
+            else
+              ComboBoxes[I].ItemIndex := 1;
+        15: ComboBoxes[I].ItemIndex := 3;
+      else
+        ComboBoxes[I].ItemIndex := -1;
+      end;
+    end;
+
+    UpdateTotalScore;
+    ShowMessage('Evaluation loaded from database successfully.');
+  end
+  else
+  begin
+    ShowMessage('No evaluation found for this patient and type.');
+  end;
+end;
+
+// File operations (unchanged)
 procedure TFormMain.ButtonSaveClick(Sender: TObject);
 var
   FileList: TStringList;
@@ -195,6 +385,7 @@ begin
       FileList.Add('PatientID=' + EditPatientID.Text);
       FileList.Add('PatientName=' + EditPatientName.Text);
       FileList.Add('EvalDate=' + DateToStr(DateTimePickerEval.Date));
+      FileList.Add('EvalType=' + GetEvaluationType);
       FileList.Add('');
 
       // Evaluation Items
@@ -216,7 +407,7 @@ begin
       FileList.Add('TotalScore=' + LabelTotalScore.Caption);
 
       FileList.SaveToFile(SaveDialog1.FileName);
-      ShowMessage('Data saved successfully.');
+      ShowMessage('Data saved to file successfully.');
     finally
       FileList.Free;
     end;
@@ -255,6 +446,13 @@ begin
             EditPatientName.Text := Value
           else if Key = 'EvalDate' then
             DateTimePickerEval.Date := StrToDate(Value)
+          else if Key = 'EvalType' then
+          begin
+            if Value = 'Admission' then
+              RadioButtonAdmission.Checked := True
+            else
+              RadioButtonDischarge.Checked := True;
+          end
           // Evaluation Items
           else if Key = 'Item1' then
             ComboBox1.ItemIndex := StrToInt(Value)
@@ -280,7 +478,7 @@ begin
       end;
 
       UpdateTotalScore;
-      ShowMessage('Data loaded successfully.');
+      ShowMessage('Data loaded from file successfully.');
     finally
       FileList.Free;
     end;
@@ -297,6 +495,7 @@ begin
     EditPatientID.Text := '';
     EditPatientName.Text := '';
     DateTimePickerEval.Date := Now;
+    RadioButtonAdmission.Checked := True;
 
     ComboBox1.ItemIndex := -1;
     ComboBox2.ItemIndex := -1;
